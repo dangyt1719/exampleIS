@@ -1,0 +1,234 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
+
+using IArRestPluginQueryConstructor;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity;
+using DataClassGeneral;
+
+namespace FinOps
+{
+    public class ListFinOps : IDataForArRest
+    {
+        public ardata_General db = new ardata_General();
+        public ArRestQueryFilter GetQueryFilter(NameValueCollection Params)
+        {
+            ArRestQueryFilter QueryFilterDb = new ArRestQueryFilter();
+            QueryFilterDb.DB = this.db;
+            QueryFilterDb.QueryFilter = this.ApplyFilters(Params);
+            return QueryFilterDb;
+        }
+
+        public IQueryable GetQueryResult(NameValueCollection Params, ArRestQueryFilter QueryFilterDb)
+        {
+            return this.ApplyAddingFields(QueryFilterDb.QueryFilter as IQueryable<foFinOp>, QueryFilterDb);
+        }
+
+        public ArRestRelations GetRelations()
+        {
+            return null;
+        }
+
+        public Dictionary<string, object> ProcessingDataBeforeOutput(IQueryable QueryFilter, Dictionary<string, object> Data)
+        {
+            return Data;
+        }
+
+        //================================================================================================================
+        public IQueryable ApplyFilters(NameValueCollection Params)
+        {
+            try
+            {
+                var result = db.foFinOps.Select(s => s);
+
+                int foID = Convert.ToInt32(Params.Get("foID"));
+                int FinCode = Convert.ToInt32(Params.Get("FinCode"));
+                int foModule = Convert.ToInt32(Params.Get("foModule"));
+                int ClientID = Convert.ToInt32(Params.Get("Client"));
+                int StaffID = Convert.ToInt32(Params.Get("StaffID"));
+                int BankID = Convert.ToInt32(Params.Get("BankID"));
+                int dateType = Convert.ToInt32(Params.Get("DateType")); // Тип даты
+                DateTime dateStart = Convert.ToDateTime(Params.Get("DateStart")); // Дата с
+                DateTime dateEnd = Convert.ToDateTime(Params.Get("DateEnd")); // Дата по
+                int foJurFace = Convert.ToInt32(Params.Get("foJurFace"));
+
+                #region Номер финансовой операции
+                if (foID > 0)
+                {
+                    result = result.Where(w => w.foID == foID);
+                }
+                #endregion Номер финансовой операции
+
+                #region Вид финансовой операции
+                if (FinCode > 0)
+                {
+                    result = result.Where(r => r.FinCode == FinCode);
+                }
+                #endregion Вид финансовой операции
+
+                #region Модуль
+                if (foModule > 0)
+                {
+                    result = result.Where(w => w.foModule == foModule);
+                }
+                #endregion Модуль
+
+                #region Клиент
+                if (ClientID > 0)
+                {
+                    result = result.Where(w => w.ClientID == ClientID);
+                }
+                #endregion Клиент
+
+                #region Ответственный
+                if (StaffID >0)
+                {
+                    result = result.Where(w => w.StaffID==StaffID);
+                }
+                #endregion Ответственный
+
+                #region Даты
+                dateStart = (dateStart == default) ? DateTime.MinValue : dateStart;
+                dateEnd = (dateEnd == default) ? DateTime.MaxValue : dateEnd;
+
+                switch (dateType)
+                {
+                    case 1: 
+                        result = (from FinOpsTable in result
+                                  where 
+                                  DbFunctions.DiffDays(FinOpsTable.foDate, dateStart) <= 0 && DbFunctions.DiffDays(FinOpsTable.foDate, dateEnd) >= 0
+                                  select FinOpsTable);
+                        break;
+                    case 2: 
+                        result = (from FinOpsTable in result
+                                  join FinOpsSub in db.foFinOpSubs
+                                  on FinOpsTable.foID equals FinOpsSub.foID
+                                  into FinO
+                                  from FinOTable in FinO.DefaultIfEmpty()
+                                  where
+                                  (DbFunctions.DiffDays(FinOTable.DebDate, dateStart) <= 0 && DbFunctions.DiffDays(FinOTable.DebDate, dateEnd) >= 0 && FinOTable.DebDate!=FinOpsTable.foDate && FinOTable.DebIDCode==30)
+                                  || (DbFunctions.DiffDays(FinOTable.CredDate, dateStart) <= 0 && DbFunctions.DiffDays(FinOTable.CredDate, dateEnd) >= 0 && FinOpsTable.foDate!=FinOTable.CredDate && FinOTable.CredIDCode==30)
+
+                                  select FinOpsTable);
+                        break;
+                    case 3:
+                        result = (from FinOpsTable in result
+                                  where
+                                  DbFunctions.DiffDays(FinOpsTable.foBudgetDate, dateStart) <= 0 && DbFunctions.DiffDays(FinOpsTable.foBudgetDate, dateEnd) >= 0
+                                  select FinOpsTable);
+                        break;
+
+                }
+                #endregion Даты
+
+                #region Юр.лицо
+                if (foJurFace > 0)
+                {
+                    result = result.Where(w => w.foJurFace == foJurFace);
+                }
+                #endregion Юр.лицо
+
+                #region BankID
+                if (BankID > 0)
+                {
+                    
+                }
+                #endregion Клиент
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public IQueryable ApplyAddingFields(IQueryable<foFinOp> query, ArRestQueryFilter QueryFilterDb)
+        {
+            try
+            {
+
+
+                var result = from FinOpsTable in query
+
+                             join fincode in db.foFinCodes
+                             on FinOpsTable.FinCode equals fincode.FinCode
+                             into FinCode
+                             from FinCodeTable in FinCode.DefaultIfEmpty()
+
+                             join finmodule in db.foListTables
+                             on FinOpsTable.foModule equals finmodule.TableID
+                             into FinModule
+                             from FinModuleTable in FinModule.DefaultIfEmpty()
+
+                             join jurface14 in db.CompaniesARs
+                             on FinOpsTable.foJurFace equals jurface14.ID
+                             into jurfaceCompaniesAR
+                             from jurfaceCompaniesARTable in jurfaceCompaniesAR.DefaultIfEmpty()
+
+                             join jurface20 in db.foImpLists
+                             on FinOpsTable.foJurFace equals jurface20.ID
+                             into jurfacefoImpList
+                             from jurfacefoImpListTable in jurfacefoImpList.DefaultIfEmpty()
+
+                             join jurface in db.foFinCatalogs
+                             on FinOpsTable.foJurFace equals jurface.ID
+                             into jurfacefoFinCatalogs
+                             from jurfacefoFinCatalogsTable in jurfacefoFinCatalogs.DefaultIfEmpty()
+
+                             join fincurrency in db.Currencies
+                             on FinOpsTable.Cur equals fincurrency.code
+                             into FinCurrency
+                             from FinCurrencyTable in FinCurrency.DefaultIfEmpty()
+
+                             join clients in db.clients
+                             on FinOpsTable.ClientID equals clients.ID
+                             into foClients
+                             from foClientsTable in foClients.DefaultIfEmpty()
+
+                             join fopayer in db.foImpPayers
+                             on FinOpsTable.Payer equals fopayer.ID.ToString()
+                             into foFinPayer
+                             from foFinPayerTable in foFinPayer.DefaultIfEmpty()
+
+                             join fopayer in db.recipients
+                             on FinOpsTable.Payer equals fopayer.ID.ToString()
+                             into foRecipients
+                             from foRecipientsTable in foRecipients.DefaultIfEmpty()
+
+                             join foagent in db.fAgents
+                             on FinOpsTable.fAgent equals foagent.fAgentID
+                             into foAgents
+                             from foAgentsTable in foAgents.DefaultIfEmpty()
+
+                             join staff in db.staffs
+                             on FinOpsTable.StaffID equals staff.StaffID
+                             into foStaff
+                             from foStaffTable in foStaff.DefaultIfEmpty()
+                             select new
+                             {
+                                 MainTable1 = FinOpsTable,
+                                 ID=FinOpsTable.foID,
+                                 foFinCode=FinCodeTable.FinCodeName,
+                                 foFinModule=FinModuleTable.Description,
+                                 foJur_Face =(FinOpsTable.foModule==14? jurfaceCompaniesARTable.Name :FinOpsTable.foModule == 20 ? jurfacefoImpListTable.NameImp : jurfacefoFinCatalogsTable.Name),
+                                 foFinCurrency =FinCurrencyTable.curName,
+                                 foClient= foClientsTable.Name,
+                                 foFinPayer= ((FinOpsTable.foModule == 20 || FinOpsTable.foModule == 16 || FinOpsTable.foModule == 22 || FinOpsTable.foModule == 62 || FinOpsTable.foModule == 63) && FinOpsTable.FinCode==10 ? foFinPayerTable.Name : foRecipientsTable.Name),
+                                 foAgent= foAgentsTable.fAgentName,
+                                 Status=FinOpsTable.Complete==-1? "закрыта" : "открыта",
+                                 Staff= foStaffTable.StaffName
+
+                             };
+
+                return result.Distinct();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+    }
+}

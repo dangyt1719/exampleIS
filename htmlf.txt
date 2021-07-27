@@ -1,0 +1,485 @@
+@using R3.Class
+@{
+    ViewBag.Title = Global.Localization.reestr_fo;
+
+    Random r = new Random();
+    int random = r.Next();
+}
+<link rel="stylesheet" type="text/css" href="~/R3CSS/FinOps/FinOps.css?@Global.Version">
+<link rel="stylesheet" type="text/css" href="~/R3Libs/animate.css?@Global.Version"/>
+<link rel="stylesheet" type="text/css" href="~/R3Libs/toastr/toastr.css?@Global.Version" />
+<script id="ItemsTableTemplate" type="text/x-handlebars-template">
+    {{#each value}}
+    {{NewIfUndefined foID 'foID'}}
+    <div class="panel panel-primary col-lg-12">
+        <div class="panel-heading">
+            {{ GetLocalization "fo_card" }}
+            {{ foID }}
+        </div>
+        <div id="FinOps" class="panel-body">
+            <div class="col-lg-12" style="margin-left:15px;">
+                <div class="row">
+                    <div class="row" style=" margin-top: 10pt;">
+                        <div class="row">
+                            {{#ifCond foID '==' 'NEW'}}
+                            <div class="col-lg-8" id="FinOpCol1">
+                                {{else}}
+                                {{#ifCond ComisSign '!=' 0}}
+                                <div class="col-lg-5" id="FinOpCol1">
+                                    {{else}}
+                                    <div class="col-lg-8" id="FinOpCol1">
+                                        {{/ifCond}}
+                                        {{/ifCond}}
+                                        <div class="row">
+                                            {{#ifCond foID '==' 'NEW'}}
+
+                                            {{ formGroupStandartInput "FinOps" 1 "fo_date" foID "" "foDate" foDate "" foID "data-myajax=FinOps data-mygeneralcol=true data-mydateformat=1 required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "date" "elem_div_panel panel_div_elem_margin_left col-lg-3" }}
+
+                                            {{ standartSelect2 "FinOps" "type_of_FO" "FinCode" "FOType" FinCode "" foID foID 0 "data-myajax=FinOps data-number=1 required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-3" "" "" }}
+
+                                            {{formGroupStandartCheckbox "FinOps" "return" foID "ReturnFO" ReturnFO foID "" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "elem_div_panel panel_div_elem_margin_left col-lg-2"  }}
+
+                                            {{ standartSelect2 "FinOps" "responsible_1" "StaffID" "StaffsFull" (CheckStaffID) "" foID foID 0 "data-myajax=FinOps  data-number=1 data-new=1 required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left  col-lg-3" "" "" }}
+
+                                            {{else}}
+                                            {{ formGroupStandartInput "FinOps" 1 "fo_date" foID "" "foDate" foDate "" foID "data-myajax=FinOps data-mygeneralcol=true data-mydateformat=1 required " (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "date" "elem_div_panel panel_div_elem_margin_left col-lg-3" }}
+
+                                            {{ standartSelect2 "FinOps" "type_of_FO" "FinCode" "FOType" FinCode "" foID foID 0 "data-myajax=FinOps data-number=1 required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-3" "" "" }}
+
+                                            {{formGroupStandartCheckbox "FinOps" "return" foID "ReturnFO" ReturnFO foID "" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "elem_div_panel col-lg-2"  }}
+
+                                            {{ standartSelect2 "FinOps" "responsible_1" "StaffID" "StaffsFull" StaffID "" foID foID 0 "data-myajax=FinOps data-number=1" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left  col-lg-3" "" "" }}
+
+                                            {{/ifCond}}
+                                        </div>
+                                        <div class="row">
+                                            {{#ifCond foID '==' 'NEW'}}
+                                            {{#check_roles_for_read "100"}}
+                                            {{ standartSelect2 "FinOps" "FO_module" "foModule" "FOModule" 14 "" foID foID 0 "data-myajax=FinOps data-number=1 required readonly disabled" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-3" "" "" }}
+
+                                            {{ standartSelect2 "FinOps" "lawyer" "foJurFace" "CompaniesAr" foJurFace "" foID foID 0 "data-myajax=FinOps data-number=1 required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-3" "" "" }}
+
+                                            {{else}}
+                                            {{ standartSelect2 "FinOps" "FO_module" "foModule" "FOModule" foModule "" foID foID 0 "data-myajax=FinOps data-number=1 required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-3" "" "" }}
+
+                                            {{ standartSelect2 "FinOps" "lawyer" "foJurFace" "" foJurFace "" foID foID 0 "data-myajax=FinOps data-number=1 required disabled" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-3" "" "" }}
+
+                                            {{formGroupStandartCheckbox "FinOps" "course" foID "CurSign" CurSign foID "" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "elem_div_panel panel_div_elem_margin_left col-lg-2"  }}
+                                            {{formGroupStandartCheckbox "FinOps" "commis" foID "ComisSign" ComisSign foID "" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "elem_div_panel panel_div_elem_margin_left col-lg-2"  }}
+
+                                            {{/check_roles_for_read}}
+
+                                            {{else}}
+                                            {{ standartSelect2 "FinOps" "FO_module" "foModule" "FOModule" foModule "" foID foID 0 "data-myajax=FinOps data-number=1 required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-3" "" "" }}
+                                            {{#ifCond foModule '==' 14}}
+                                            {{ standartSelect2 "FinOps" "lawyer" "foJurFace" "CompaniesAr" foJurFace "" foID foID 0 "data-myajax=FinOps data-number=1 required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-3" "" "" }}
+                                            {{else}}
+                                            {{#ifCond foModule '==' 20}}
+                                            {{ standartSelect2 "FinOps" "lawyer" "foJurFace" "FOImpList" foJurFace "" foID foID 0 "data-myajax=FinOps data-number=1 required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-3" "" "" }}
+                                            {{else}}
+                                            {{ standartSelect2 "FinOps" "lawyer" "foJurFace" "FOFinCatalogsAll" foJurFace "" foID foID 0 "data-myajax=FinOps data-number=1 required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-3" "" "" }}
+                                            {{/ifCond}}
+                                            {{/ifCond}}
+
+                                            {{formGroupStandartCheckbox "FinOps" "course" foID "CurSign" CurSign foID "" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "elem_div_panel  col-lg-2"  }}
+                                            {{formGroupStandartCheckbox "FinOps" "commis" foID "ComisSign" ComisSign foID "" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "elem_div_panel panel_div_elem_margin_left col-lg-2"  }}
+
+                                            {{/ifCond}}
+                                        </div>
+                                        <div class="row">
+                                            {{formGroupStandartTextArea "FinOps" 1 "comments" foID "" "Comments" Comments foID  "data-myajax=FinOps maxlength=200 " (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "" "panel_div_elem_margin_left col-lg-6 txt-comments" "" "" "" 200 }}
+                                            {{#ifCond foID '==' 'NEW'}}
+                                            <div class="col-lg-5" style="margin-left:10px;" id="courseDiv" hidden>
+                                                <div class="row">
+                                                    {{ formGroupStandartInput "FinOps" 1 "client_currency" ID "" "CurRateCl" CurRateCl "" ID "data-myajax=FinOps data-number=1 type='number' step='any'" (concat_equal "data-line" (concat "FinOps_" ID)) 0 0 "" "panel_div_elem_margin_left no-arrows col-lg-6" }}
+                                                    {{ formGroupStandartInput "FinOps" 1 "from_small" foID "" "CurDateCl" CurDateCl "" foID "data-myajax=FinOps data-mydateformat=1 " (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "date" "elem_div_panel panel_div_elem_margin_left col-lg-5" }}
+                                                </div>
+                                                <div class="row">
+                                                    {{ formGroupStandartInput "FinOps" 1 "KB_currency" ID "" "CurRateKB" CurRateKB "" ID "data-myajax=FinOps data-number=1 type='number' step='any'" (concat_equal "data-line" (concat "FinOps_" ID)) 0 0 "" "panel_div_elem_margin_left no-arrows col-lg-6" }}
+                                                    {{ formGroupStandartInput "FinOps" 1 "from_small" foID "" "CurDateKB" CurDateKB "" foID "data-myajax=FinOps data-mydateformat=1 " (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "date" "elem_div_panel panel_div_elem_margin_left col-lg-5" }}
+                                                </div>
+                                            </div>
+                                            {{else}}
+                                            {{#ifCond CurSign '!=' 0}}
+                                            <div class="col-lg-5" style="margin-left:10px;" id="courseDiv">
+                                                <div class="row">
+                                                    {{ formGroupStandartInput "FinOps" 1 "client_currency" ID "" "CurRateCl" CurRateCl "" ID "data-myajax=FinOps data-number=1 type='number' step='any'" (concat_equal "data-line" (concat "FinOps_" ID)) 0 0 "" "no-arrows col-lg-6" }}
+                                                    {{ formGroupStandartInput "FinOps" 1 "from_small" foID "" "CurDateCl" CurDateCl "" foID "data-myajax=FinOps data-mydateformat=1 " (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "date" "elem_div_panel panel_div_elem_margin_left col-lg-5" }}
+                                                </div>
+                                                <div class="row">
+                                                    {{ formGroupStandartInput "FinOps" 1 "KB_currency" ID "" "CurRateKB" CurRateKB "" ID "data-myajax=FinOps data-number=1 type='number' step='any'" (concat_equal "data-line" (concat "FinOps_" ID)) 0 0 "" "no-arrows col-lg-6" }}
+                                                    {{ formGroupStandartInput "FinOps" 1 "from_small" foID "" "CurDateKB" CurDateKB "" foID "data-myajax=FinOps data-mydateformat=1 " (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "date" "elem_div_panel panel_div_elem_margin_left col-lg-5" }}
+                                                </div>
+                                            </div>
+                                            {{else}}
+                                            <div class="col-lg-5" style="margin-left:10px;" id="courseDiv" hidden>
+                                                <div class="row">
+                                                    {{ formGroupStandartInput "FinOps" 1 "client_currency" ID "" "CurRateCl" CurRateCl "" ID "data-myajax=FinOps data-number=1 type='number' step='any'" (concat_equal "data-line" (concat "FinOps_" ID)) 0 0 "" "no-arrows col-lg-6" }}
+                                                    {{ formGroupStandartInput "FinOps" 1 "from_small" foID "" "CurDateCl" CurDateCl "" foID "data-myajax=FinOps data-mydateformat=1 " (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "date" "elem_div_panel panel_div_elem_margin_left col-lg-5" }}
+                                                </div>
+                                                <div class="row">
+                                                    {{ formGroupStandartInput "FinOps" 1 "KB_currency" ID "" "CurRateKB" CurRateKB "" ID "data-myajax=FinOps data-number=1 type='number step='any'" (concat_equal "data-line" (concat "FinOps_" ID)) 0 0 "" "no-arrows col-lg-6" }}
+                                                    {{ formGroupStandartInput "FinOps" 1 "from_small" foID "" "CurDateKB" CurDateKB "" foID "data-myajax=FinOps data-mydateformat=1 " (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "date" "elem_div_panel panel_div_elem_margin_left col-lg-5" }}
+                                                </div>
+                                            </div>
+                                            {{/ifCond}}
+                                            {{/ifCond}}
+                                        </div>
+                                        <div></div>
+                                    </div>
+                                    {{#ifCond foID '==' 'NEW'}}
+                                    <div class="col-lg-3 hideScroll " style="padding:0px; margin:0px; max-height:200px; overflow:scroll;" id="FinOpsComis" hidden>
+                                        {{#if (GetHandlebarsEditPanel) }}
+                                        <button class="btn btn-default btn-sm" onclick="add_new_commis()"> + </button>
+                                        {{/if }}
+                                        <table class="table table-hover" id="FinOpsComisTable" style="max-height:200px; overflow:scroll;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align:center;"> {{GetLocalization "commis" }} </th>
+                                                    <th style="text-align:center;"> {{GetLocalization "currency" }} </th>
+                                                    {{#if (GetHandlebarsEditPanel) }}
+                                                    <th style="text-align:center;"> {{ GetLocalization "action" }}</th>
+                                                    {{/if }}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {{#each FinOpsComis._Data }} {{handleBarLog this}}
+                                                <tr align="center" id="tr_FinOpsComis_{{ ID }}">
+                                                    <td align="center" style=" width: 100px; max-width:100px;">
+                                                        {{ formGroupStandartInput "FinOpsComis" 1 "" ID "" "Commission" Commission "" ID "data-myajax=FinOpsComis data-number=1 type='number'" (concat_equal "data-line" (concat "FinOpsComis_" ID)) 0 0 "" "no-arrows col-lg-12" }}
+                                                    </td>
+                                                    <td align="center" style=" width: 100px; max-width:100px;">
+                                                        {{ standartSelect2 "FinOpsComis" " " "CurComis" "Currencies" Cur "" ID ID 0 "data-myajax=FinOpsComis data-number=1" (concat_equal "data-line" (concat "FinOpsComis_" ID)) 0 "col-lg-12" "" "" }}
+                                                    </td>
+                                                    {{#if (GetHandlebarsEditPanel) }}
+                                                    <td align="center"> <label> </label> <br /> <label> </label> <br />{{Handlebars_button_remove_elem  "FinOpsComis" ID (concat "tr[id=tr_FinOpsComis_" ID "]" "") 1}} </td>
+                                                    {{/if }}
+                                                </tr>
+                                                {{/each}}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {{else}}
+
+                                    {{#ifCond ComisSign '!=' 0}}
+                                    <div class="col-lg-3 hideScroll" style="padding:0px; margin:0px; max-height:200px; overflow:scroll;" id="FinOpsComis">
+                                        {{#if (GetHandlebarsEditPanel) }}
+                                        <button class="btn btn-default btn-sm" onclick="add_new_commis()"> + </button>
+                                        {{/if }}
+                                        <table class="table table-hover " id="FinOpsComisTable" style="max-height:200px; overflow:scroll;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align:center;"> {{GetLocalization "commis" }} </th>
+                                                    <th style="text-align:center;"> {{GetLocalization "currency" }} </th>
+                                                    {{#if (GetHandlebarsEditPanel) }}
+                                                    <th style="text-align:center;"> {{ GetLocalization "action" }}</th>
+                                                    {{/if }}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {{#each FinOpsComis._Data }} {{handleBarLog this}}
+                                                <tr align="center" id="tr_FinOpsComis_{{ ID }}">
+                                                    <td align="center" style=" width: 100px; max-width:100px;">
+                                                        {{ formGroupStandartInput "FinOpsComis" 1 "" ID "" "Commission" Commission "" ID "data-myajax=FinOpsComis data-number=1 type='number'" (concat_equal "data-line" (concat "FinOpsComis_" ID)) 0 0 "" "no-arrows col-lg-12" }}
+                                                    </td>
+                                                    <td align="center" style=" width: 100px; max-width:100px;">
+                                                        {{ standartSelect2 "FinOpsComis" " " "CurComis" "Currencies" Cur "" ID ID 0 "data-myajax=FinOpsComis data-number=1 onfocus='this.oldvalue=this.value;'" (concat_equal "data-line" (concat "FinOpsComis_" ID)) 0 "col-lg-12 min-w60" "" "" }}
+                                                    </td>
+                                                    {{#if (GetHandlebarsEditPanel) }}
+                                                    <td align="center"> <label> </label> <br /> <label> </label> <br />{{Handlebars_button_remove_elem  "FinOpsComis" ID (concat "tr[id=tr_FinOpsComis_" ID "]" "") 1}} </td>
+                                                    {{/if }}
+                                                </tr>
+                                                {{/each}}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {{else}}
+                                    <div class="col-lg-3 hideScroll" style="padding:0px; margin:0px; max-height:200px; overflow:scroll;" id="FinOpsComis" hidden>
+                                        {{#if (GetHandlebarsEditPanel) }}
+                                        <button class="btn btn-default btn-sm" onclick="add_new_commis()"> + </button>
+                                        {{/if }}
+                                        <table class="table table-hover " id="FinOpsComisTable" style="max-height:200px; overflow:scroll;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align:center;"> {{GetLocalization "commis" }} </th>
+                                                    <th style="text-align:center;"> {{GetLocalization "currency" }} </th>
+                                                    {{#if (GetHandlebarsEditPanel) }}
+                                                    <th style="text-align:center;"> {{ GetLocalization "action" }}</th>
+                                                    {{/if }}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {{#each FinOpsComis._Data }} {{handleBarLog this}}
+                                                <tr align="center" id="tr_FinOpsComis_{{ ID }}">
+                                                    <td align="center" style=" width: 100px; max-width:100px;">
+                                                        {{ formGroupStandartInput "FinOpsComis" 1 "" ID "" "Commission" Commission "" ID "data-myajax=FinOpsComis data-number=1 type='number'" (concat_equal "data-line" (concat "FinOpsComis_" ID)) 0 0 "" "no-arrows col-lg-12" }}
+                                                    </td>
+                                                    <td align="center" style=" width: 100px; max-width:100px;">
+                                                        {{ standartSelect2 "FinOpsComis" " " "CurComis" "Currencies" Cur "" ID ID 0 "data-myajax=FinOpsComis data-number=1" (concat_equal "data-line" (concat "FinOpsComis_" ID)) 0 "col-lg-12" "" "" }}
+                                                    </td>
+                                                    {{#if (GetHandlebarsEditPanel) }}
+                                                    <td align="center"> <label> </label> <br /> <label> </label> <br />{{Handlebars_button_remove_elem  "FinOpsComis" ID (concat "tr[id=tr_FinOpsComis_" ID "]" "") 1}} </td>
+                                                    {{/if }}
+                                                </tr>
+                                                {{/each}}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {{/ifCond}}
+                                    {{/ifCond}}
+                                    <div class="col-lg-3 pull-right">
+                                        <div class="row">
+                                            {{ formGroupStandartInput "FinOps" 1 "number_PD" foID "" "foDocNum" foDocNum "" foID "data-myajax=FinOps data-number=1 type='number' " (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "" "elem_div_panel panel_div_elem_margin_left col-lg-4" }}
+                                        </div>
+                                        <div class="row">
+                                            {{ standartSelect2 "FinOps" "client" "ClientID" "FOClients" ClientID "" foID foID 0 "data-myajax=FinOps data-number=1 required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-5" "" "" }}
+                                            {{ formGroupStandartInput "FinOps" 1 "KU_clients" foID "" "ComConditions" ComConditions "" foID "data-myajax=FinOps data-number=1 required type='number' data-placeholder='%'" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "" "elem_div_panel panel_div_elem_margin_left col-lg-5" }}
+                                        </div>
+                                        <div class="row">
+                                            {{ standartSelect2 "FinOps" "payer" "Payer" (GetFoPayerObjectReference foModule FinCode ReturnFO ClientID) Payer "" foID foID 0 "data-myajax=FinOps data-number=1" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-5" "" "" }}
+                                            {{ standartSelect2 "FinOps" "contragent" "fAgent" "fAgents" fAgent "" foID foID 0 "data-myajax=FinOps data-number=1" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-5" "" "" }}
+                                        </div>
+
+                                        <div class="row">
+                                            {{#check_roles_for_read "96;13"}}
+                                            {{formGroupStandartCheckbox "FinOps" "fo_incorrect" foID "FOvalid" FOvalid foID "" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "elem_div_panel panel_div_elem_margin_left col-lg-5"  }}
+                                            {{formGroupStandartCheckbox "FinOps" "FO_closed" foID "Complete" Complete foID "" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "elem_div_panel panel_div_elem_margin_left col-lg-5"  }}
+
+                                            {{else}}
+                                            {{formGroupStandartCheckbox "FinOps" "fo_incorrect" foID "FOvalid" FOvalid foID "disabled" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "elem_div_panel panel_div_elem_margin_left col-lg-5"  }}
+                                            {{formGroupStandartCheckbox "FinOps" "FO_closed" foID "Complete" Complete foID "disabled" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "elem_div_panel panel_div_elem_margin_left col-lg-5"  }}
+
+                                            {{/check_roles_for_read}}
+
+                                            {{#if (GetHandlebarsEditPanel)}}
+                                            <button type="button" class="btn pull-right" style="margin-right:0em; margin-top:-35px; max-width:40px; max-height:40px; background-color:transparent;" onclick="add_new_FinOpsSub()"><span class="glyphicon glyphicon-plus" style=" font-size:15px;"></span></button>
+                                            {{/if }}
+
+                                        </div>
+
+
+                                    </div>
+                                    <div class="col-lg-1 pull-right">
+                                        <div class="row">
+
+                                            {{ formGroupStandartInput "FinOps" 1 "date_PD" foID "" "foDocDate" foDocDate "" foID "data-myajax=FinOps data-mydateformat=1" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "date" "elem_div_panel panel_div_elem_margin_left col-lg-12" }}
+
+                                            {{ formGroupStandartInput "FinOps" 1 "date_budjet" foID "" "foBudgetDate" foBudgetDate "" foID "data-myajax=FinOps data-mydateformat=1  " (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "date" "elem_div_panel panel_div_elem_margin_left col-lg-12" }}
+                                        </div>
+                                        <div class="row">
+                                            {{ formGroupStandartInput "FinOps" 1 "sum_PD" foID "" "SumCurAll" SumCurAll "" foID "data-myajax=FinOps data-number=1 type='number' required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 0 "" "elem_div_panel panel_div_elem_margin_left col-lg-12" }}
+                                            {{ standartSelect2 "FinOps" "currency" "Cur" "Currencies" Cur "" foID foID 0 "data-myajax=FinOps data-number=1 required" (concat_equal "data-line" (concat "FinOps_" foID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-12" "" "" }}
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                                {{#if (GetHandlebarsEditPanel)}}
+                                @*     <div class="row" style="margin-top: -15px;">
+                                    <button type="button" class="btn pull-right" style="margin-right:0em; max-width:40px; max-height:40px; background-color:transparent;" onclick="add_new_FinOpsSub()"><span class="glyphicon glyphicon-plus" style=" font-size:15px;"></span></button>
+
+                                                </div>  *@
+                                {{/if }}
+
+                            <div id="FinOpsSub" style="margin-top:-43px;">
+                                {{#each FinOpsSub._Data }} {{handleBarLog this}}
+                                <div id="FinOpsSub_{{fosID}}" class="row col-lg-12" style="transition: box-shadow 0.5s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-left: 0px; margin-bottom: 10pt; margin-top: -5px; ">
+                                    <span class="glyphicon glyphicon-paperclip" style="position:absolute; left:-0.2em; top:0; font-size:20px;  transform: rotate(160deg);"></span>
+                                    {{#if (GetHandlebarsEditPanel)}}
+                                    <span class="glyphicon glyphicon-minus" style="position:absolute; right:0.6em; top:0em; font-size:20px; cursor:pointer;" onclick="Handlebars_button_remove_elem_action('FinOpsSub', '{{fosID}}', this, 0, 'FinOpsSub_{{fosID}}', 1)"></span>
+                                    @* <span class="glyphicon glyphicon-copy" style="position:absolute; right:1.6em; top:0em; font-size:20px; cursor:pointer;"></span>*@
+                                    {{/if }}
+
+                                    <div class="row" style="padding-left:15px; padding-top:10px; margin: 0 auto;">
+                                        <fieldset class="customLegend row">
+                                            <legend style="font-size:14px; font-family:' Helvetica Neue',Helvetica,Arial,sans-serif; color:#808080;">ДБ</legend>
+                                            <div class="row" style="margin-left:0px;">
+                                                {{ standartSelect2 "FinOpsSub" "view" "DebIDCode" "FOCodes" DebIDCode "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-2 " "" "" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "view_bill" "DebBillType" "FOViewBill" DebBillType "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel ml-20 col-lg-2" "" "" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "bank" "DebBank" "FOBanks" DebBank "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-2" "" "" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "manual" "DebTableID" "FOManual" DebTableID "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-3" "" "" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "manual_element" "DebObjectID" (GetDebTableObjectReference DebTableID) DebObjectID "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel ml-20 col-lg-2" "" "" }}
+
+                                            </div>
+
+                                            <div class="row" style="margin-left:0px;">
+                                                {{ formGroupStandartInput "FinOpsSub" 1 "sum_operation" fosID "" "DebSum" DebSum "" fosID "data-myajax=FinOpsSub  type='number'" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 0 "" "elem_div_panel panel_div_elem_margin_left col-lg-1" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "currency" "DebCur" "Currencies" DebCur "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-1" "" "" }}
+
+                                                {{ formGroupStandartInput "FinOpsSub" 1 "from_small" fosID "" "DebDate" DebDate "" fosID "data-myajax=FinOpsSub data-mydateformat=1  " (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 0 "date" "elem_div_panel panel_div_elem_margin_left col-lg-2" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "balance_type" "DebPersAccount" "FOBalanceView" DebPersAccount "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-2" "" "" }}
+
+                                                {{ formGroupStandartInput "FinOpsSub" 1 "money_code" fosID "" "DebCodeMoney" DebCodeMoney "" fosID "data-myajax=FinOpsSub data-number=1 type='number'" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 0 "" "elem_div_panel panel_div_elem_margin_left col-lg-1" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "filial" "DebDepartment" "Filials" DebDepartment "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-2" "" "" }}
+
+                                                {{#if (GetHandlebarsEditPanel)}}
+                                                {{ formGroupStandartInput "FinOpsSub" 1 "receipts" fosID "" "DebIncome" DebIncome "DebIncome" fosID "data-myajax=FinOpsSub data-number=1 type='number' id=GCIDbutton ondblclick='window.open(createNewReceipts(this))'" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 0 "" "elem_div_panel panel_div_elem_margin_left col-lg-2" }}
+                                                {{else}}
+                                                <div class=" panel_edit_element elem_div_panel panel_div_elem_margin_left col-lg-2" style="min-height:40px;">
+                                                    <label class="panel_edit_element_label">{{GetLocalization "receipts"}}</label>
+                                                    <a target="_blank" style=" color: #4682B4; text-decoration: none;" href="/Receipts?Details={{DebIncome}}">  {{DebIncome}}</a>
+                                                </div>
+                                                {{/if}}
+                                            </div>
+
+                                        </fieldset>
+                                    </div>
+                                    <div class="row" style="padding-left: 15px; margin: -5px auto 0px;">
+                                        <fieldset class="customLegend row">
+                                            <legend style="font-size:14px; font-family:' Helvetica Neue',Helvetica,Arial,sans-serif; color:#808080;">КР</legend>
+
+                                            <div class="row" style="margin-left:0px;">
+                                                {{ standartSelect2 "FinOpsSub" "view" "CredIDCode" "FOCodes" CredIDCode "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-2" "" "" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "view_bill" "CredBillType" "FOViewBill" CredBillType "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel ml-20 col-lg-2" "" "" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "bank" "CredBank" "FOBanks" CredBank "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-2" "" "" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "manual" "CredTableID" "FOManual" CredTableID "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-3" "" "" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "manual_element" "CredObjectID" (GetCredTableObjectReference CredTableID) CredObjectID "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel ml-20 col-lg-2" "" "" }}
+
+                                            </div>
+
+                                            <div class="row" style="margin-left:0px;">
+                                                {{ formGroupStandartInput "FinOpsSub" 1 "sum_operation" fosID "" "CredSum" CredSum "" fosID "data-myajax=FinOpsSub data-mydateformat=1 type='number' " (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 0 "" "elem_div_panel panel_div_elem_margin_left col-lg-1" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "currency" "CredCur" "Currencies" CredCur "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-1" "" "" }}
+
+                                                {{ formGroupStandartInput "FinOpsSub" 1 "from_small" fosID "" "CredDate" CredDate "" fosID "data-myajax=FinOpsSub data-mydateformat=1  " (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 0 "date" "elem_div_panel panel_div_elem_margin_left col-lg-2" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "balance_type" "CredPersAccount" "FOBalanceView" CredPersAccount "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-2" "" "" }}
+
+                                                {{ formGroupStandartInput "FinOpsSub" 1 "money_code" fosID "" "CredcodeMoney" CredcodeMoney "" fosID "data-myajax=FinOpsSub  data-number=1 type='number'" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 0 "" "elem_div_panel panel_div_elem_margin_left col-lg-1" }}
+
+                                                {{ standartSelect2 "FinOpsSub" "filial" "CredDepartment" "Filials" CredDepartment "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-2" "" "" }}
+
+                                                {{#if (GetHandlebarsEditPanel)}}
+                                                {{ formGroupStandartInput "FinOpsSub" 1 "receipts" fosID "" "CredIncome" CredIncome "CredIncome" fosID "data-myajax=FinOpsSub data-number=1 type='number' id=GCIDbutton ondblclick='window.open(createNewReceipts(this))'" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 0 "" "elem_div_panel panel_div_elem_margin_left col-lg-2" }}
+                                                {{else}}
+                                                <div class=" panel_edit_element elem_div_panel panel_div_elem_margin_left col-lg-2" style="min-height:40px;">
+                                                    <label class="panel_edit_element_label">{{GetLocalization "receipts"}}</label>
+                                                    <a target="_blank" style=" color: #4682B4; text-decoration: none;" href="/Receipts?Details={{CredIncome}}">  {{CredIncome}}</a>
+                                                </div>
+                                                {{/if}}
+                                            </div>
+
+                                        </fieldset>
+                                    </div>
+                                    <a id="collapseHeader_{{fosID}}" class="mycollapse-title pull-right" style=" color: #4682B4; text-decoration: none;" data-toggle="collapse" href="#collapse_{{fosID}}">Подробности<i class='glyphicon glyphicon-menu-down'></i></a>
+                                    <div id="collapse_{{fosID}}" class="panel-collapse collapse myCollapse">
+
+
+                                        <div class="row" style="padding-left: 15px; margin-left: -15px;margin-top:5px;">
+
+                                            {{ standartSelect2 "FinOpsSub" "document" "DocTableID" "FODocuments" DocTableID "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-1" "" "" }}
+
+                                            {{ standartSelect2 "FinOpsSub" "document_element" "DocObjectID" (GetDocObjectReference DocTableID) DocObjectID "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-1" "" "" }}
+
+                                            {{ standartSelect2 "FinOpsSub" "responsible_1" "RecipTableID" "FORecipTable" RecipTableID "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-2" "" "" }}
+
+                                            {{ standartSelect2 "FinOpsSub" "responsible_element" "RecipID" (GetRecipObjectReference RecipTableID) RecipID "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-2" "" "" }}
+
+                                            {{#if (GetHandlebarsEditPanel)}}
+                                            {{ formGroupStandartInput "FinOpsSub" 1 "order" fosID "" "GCID" GCID "GCID" fosID "data-myajax=FinOpsSub data-number=1 type='number' id=GCIDbutton ondblclick='choose_ObjectGCID(this);'" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 0 "" "elem_div_panel panel_div_elem_margin_left col-lg-2" }}
+
+                                            {{ formGroupStandartInput "FinOpsSub" 1 "bill" fosID "" "BID" BID "" fosID "data-myajax=FinOpsSub data-number=1 type='number' id=GCIDbutton ondblclick='choose_ObjectBID(this);'" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 0 "" "elem_div_panel panel_div_elem_margin_left col-lg-2" }}
+                                            {{else}}
+                                            <div class=" panel_edit_element elem_div_panel panel_div_elem_margin_left col-lg-2" style="min-height:40px;">
+                                                <label class="panel_edit_element_label">{{GetLocalization "order"}}</label>
+                                                <a target="_blank" style=" color: #4682B4; text-decoration: none;" href="/GoodsControl?Details={{GCID}}">  {{GCID}}</a>
+                                            </div>
+                                            <div class="panel_edit_element elem_div_panel panel_div_elem_margin_left col-lg-2" style="min-height:40px;">
+                                                <label class="panel_edit_element_label">{{GetLocalization "bill"}}</label>
+                                                <a id="DTGCID" target="_blank" style=" color: #4682B4; text-decoration: none;" href="/clBills?Details={{BID}}"> {{BID}}</a>
+                                            </div>
+                                            {{/if}}
+
+                                        </div>
+                                        <div class="row" style="padding-left: 15px; margin-left: -15px; margin-bottom:10px;">
+
+                                            {{formGroupStandartTextArea "FinOpsSub" 1 "comment" fosID "" "Comments" Comments fosID  "data-myajax=FinOpsSub maxlength=200 " (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 0 "" "panel_div_elem_margin_left col-lg-5 txt-comments" "" "" "" 200 }}
+
+                                            <span class="ml30 col-lg-1"></span>
+
+                                            {{#if (GetHandlebarsEditPanel)}}
+                                            {{ standartSelect2 "FinOpsSub" "request_command" "MissionID" "FOMissions" MissionID "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-2" "" "" }}
+                                            {{else}}
+                                            <div class="panel_edit_element elem_div_panel panel_div_elem_margin_left col-lg-2" style="min-height:40px;">
+                                                <label class="panel_edit_element_label">{{GetLocalization "request_command"}}</label>
+                                                <a target="_blank" style=" color: #4682B4; text-decoration: none;" href="/Missions?Details={{MissionID}}"> {{MissionID}}</a>
+                                            </div>
+                                            {{/if}}
+                                            {{ standartSelect2 "FinOpsSub" "cfo" "OrgStructure" "FOCFO" OrgStructure "" fosID fosID 0 "data-myajax=FinOpsSub data-number=1" (concat_equal "data-line" (concat "FinOpsSub_" fosID)) 0 "elem_div_panel panel_div_elem_margin_left col-lg-2" "" "" }}
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                                {{/each}}
+                            </div>
+                              
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="ModalGC" class="modal fade col-lg-12" role="dialog">
+        <div class="modal-dialog modal_width_40">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"> Заказы </h4>
+                </div>
+                <div class="modal-body" id="ModalGCTemplate">
+                    <!-- Фильтры -->
+                    <div class="panel-group" id="PanelGCFilters" role="tablist" aria-multiselectable="false">
+                        <div role="tab" id="PGF_heading">
+                            <h4 class="panel-title">
+                                <span class="glyphicon glyphicon-filter" role="button" data-toggle="collapse" data-parent="#PanelGeneralFilters" href="#FiltersForGC">
+                                </span>
+                            </h4>
+                        </div>
+                        <div id="FiltersForGC" class="colpanel-collapse collapse">
+                        </div>
+                        <button class="btn btn-default" onclick="GeneralFilteredOk(1)" id="refresh_button" style="font-size:14px; margin-top:10px;">
+                            <i class="fa fa-refresh" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <!-- Таблица с заказами -->
+                    <div id="GCDivTable">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ButtonAction foID "'FinOps'" 1 1 0 }}
+    {{/each}}
+    {{InitJSFunction "initJsEvents"}}
+    {{InitJSFunction "setActiveTab"}}
+    {{ CreateModalWindow}}
+
+
+
+</script>
+
+<script id="ItemsPanelTemplate" type="text/x-handlebars-template">
+    <h2></h2>
+</script>
+<script src="~/R3JS/FinOps/FinOps.js?@Global.Version" asp-append-version="true"></script>
+<script src="~/R3JS/FinOps/ModalSelect.js?@Global.Version" asp-append-version="true"></script>
+<script src="~/R3Libs/toastr/toastr.js?@Global.Version" asp-append-version="true"></script>
+
